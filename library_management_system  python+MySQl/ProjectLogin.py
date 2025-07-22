@@ -125,7 +125,7 @@ def menu() :
             print(" RETRY \n")
             continue
 #--------------------------------------------------------------------------------------------------------- 
-mydb=mysql.connector.connect(host="localhost",user="root",passwd="mysql123",database="Library")
+mydb=mysql.connector.connect(host="localhost",user="root",passwd="8092278097",database="Library")
 mycursor=mydb.cursor()
 
 menu()
