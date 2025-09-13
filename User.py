@@ -1,0 +1,118 @@
+import mysql.connector
+import Tables
+mydb=mysql.connector.connect(host="localhost",user="root",passwd="8092278097",database="library")
+mycursor=mydb.cursor()
+#--------------------------------------------------------------------------------------------------------------------------------        
+def displayUser():
+    print()
+    print("User Records: \n")
+    mycursor.execute("""SELECT UserRecord.UserName,UserRecord.UserID,UserRecord.Password,UserRecord.Branch,BookRecord.BookName,BookRecord.BookID
+                        FROM UserRecord
+                        LEFT JOIN BookRecord ON UserRecord.BookID=BookRecord.BookID""")
+    records=mycursor.fetchall()
+    row_no=0
+    for rows in records :
+        row_no+=1
+        print("******************************","Row no.",row_no,"******************************")
+        print("\t             UserID: ", rows[0])
+        print("\t           UserName: ", rows[1])
+        print("\t           Password: ", rows[2])
+        print("\t             Branch: ", rows[3])
+        print("\t        Issued Book: ", rows[4])
+        print("\t             BookID: ", rows[5])
+        print()
+    x=input("Press any key to return to the User Menu")
+    return
+#--------------------------------------------------------------------------------------------------------------------------------             
+def insertUser():
+    while True :
+        data=()
+        print()
+        UserID=input(" Enter UserID: ")
+        mycursor.execute("SELECT UserID FROM userrecord WHERE UserID={0}".format("\'"+UserID+"\'"))
+        records = mycursor.fetchall()
+        if records:
+            print(f"UserID {UserID} is already exist !\n")
+        else:
+            UserName=input(" Enter User Name: ")
+            Password=input(" Enter Password to be Set: ")
+            Branch=input(" Enter user Branch:  ")
+            data=(UserID, UserName, Password, Branch, None)
+            query="INSERT INTO UserRecord VALUES (%s, %s, %s, %s, %s)"
+            mycursor.execute(query,data)
+            mydb.commit()
+            print(f"UserID:{UserID}is added Succesfully!")
+        print()
+        ch=input("Do you wish to do add more Users?[Yes/No] : ")
+        if ch=="no" or ch=="No" or ch=="NO":
+            break
+    return
+#--------------------------------------------------------------------------------------------------------------------------------             
+def deleteUser():
+    while True:
+        print()
+        UserID=input(" Enter UserID whose details to be deleted : ")
+        mycursor.execute("SELECT UserID FROM userrecord WHERE UserID={0}".format("\'"+UserID+"\'"))
+        records = mycursor.fetchall()
+        if records:
+            mycursor.execute("DELETE from UserRecord where UserID = {0} ".format("\'"+UserID+"\'"))
+            mydb.commit()
+            print(f"UserID:{UserID} Deleted Succcesfully!\n")
+        else:
+            print(f"UserID:{UserID} is InValid!\n")
+        ch=input("Do you wish to delete more Users?[Yes/No] : ")
+        if ch=="no" or ch=="No" or ch=="NO":
+            break
+    return
+#--------------------------------------------------------------------------------------------------------------------------------         
+def searchUser():
+    while True:
+        print()
+        Search=input(" Enter UserID to be Searched: ")  
+        mycursor.execute("SELECT UserName, UserID, Password, Branch, BookName, UserRecord.BookID\
+                    FROM library.UserRecord LEFT JOIN library.BookRecord\
+                    ON BookRecord.BookID=UserRecord.BookID\
+                    WHERE UserRecord.UserID={0}".format("\'"+Search+"\'"))
+        records=mycursor.fetchall()
+        row_no=0
+        if records:
+            for rows in records :
+                row_no+=1
+                print("******************************","Searched User Record",row_no,"******************************")
+                print("\t             UserID: ", rows[0])
+                print("\t           UserName: ", rows[1])
+                print("\t           Password: ", rows[2])
+                print("\t             Branch: ", rows[3])
+                print("\t        Book Issued: ", rows[4])
+                print("\t         Its BookID: ", rows[5])
+                print()
+        else:
+            print("Search Unsuccesfull")
+            
+        ch=input("Do you wish to Search more Users?[Yes/No] : ")
+        if ch=="no" or ch=="No" or ch=="NO":
+            break
+    return
+#--------------------------------------------------------------------------------------------------------------------------------     
+def updateUser():
+    while True:
+        print()
+        data=()
+        UserID=input(" Enter User ID for whose details need to be updated : ")
+        mycursor.execute("SELECT UserID FROM userrecord WHERE UserID={0}".format("\'"+UserID+"\'"))
+        records = mycursor.fetchall()
+        if records:
+            UserName=input(" Enter Updated User Name : ")
+            Password=input(" Enter Updated Password : ")
+            query="UPDATE UserRecord SET Username = %s, Password = %s WHERE UserID=%s"
+            data=(UserName,Password,UserID)
+            mycursor.execute(query,data)
+            mydb.commit()
+            print("Updated succesfully")
+        else:
+            print(f"UserID:{UserID} is Invalid!.\nPlease enter valid UserID.\n")
+        ch=input("Do you wish to Update more Users?[Yes/No] : ")
+        if ch=="no" or ch=="No" or ch=="NO":
+            break
+    return   
+#---------------------------------------------------------------------------------------------------------------------     
